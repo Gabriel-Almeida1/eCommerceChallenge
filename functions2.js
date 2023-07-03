@@ -2,7 +2,11 @@ let IDs = []
 let names = []
 let prices = []
 let reviews = []
+let shoppingCartNames = []
+let shoppingCartQuantities = []
+let shoppingCartValues = []
 let contRegister = 0
+let contCart = 0
 let programStop = true
 
 while (programStop) {
@@ -10,8 +14,10 @@ while (programStop) {
     if(programStart === 1) { // stop the loop
         programStop = false
     } else if (programStart === 2) { // start the program
-        let chooseFunction = parseInt(prompt("1-Register, 2-Search by ID, 3-Search by name, 4-Order by ID, 5-Show by review, 6-Update the price, 7-Delete the product: "))
-        if(chooseFunction > 7 || chooseFunction < 1) { // check if it's choosing the right options
+
+        let chooseFunction = parseInt(prompt("1-Register, 2-Search by ID, 3-Search by name, 4-Order by ID, 5-Show by review, 6-Update the price, 7-Delete the product, 8-Add item in cart, 9-Delete product from cart, 10-Total cart sum, 11- Show products and values."))
+
+        if(chooseFunction > 12 || chooseFunction < 1) { // check if it's choosing the right options
             console.log("You have not typed any of the options above, try again.")
         } else if(chooseFunction === 1) { // inserting elements to the arrays
             let CheckIfIDExist = false
@@ -43,17 +49,32 @@ while (programStop) {
             let IDtoUpdateThePrice = parseInt(prompt("Type the ID: "))
             let productNewPrice = parseFloat(prompt("Type the new price: "))
             updatePrice(IDtoUpdateThePrice, productNewPrice)
-        } else if (chooseFunction === 7) {
+        } else if (chooseFunction === 7) { // delete a product by its ID
             let IDtoDelete = parseInt(prompt("Insert the ID to delete the product: "))
             deleteProduct(IDtoDelete)
+        } else if (chooseFunction === 8) { // add items in the cart
+            let addItemCart = prompt("Type the item to add in the shopping cart: ")
+            let addQuantityItem = parseInt(prompt("Type the amount of itens you want to add: "))
+            shoppingCartAdd(addItemCart, addQuantityItem)
+        } else if (chooseFunction === 9) {
+            let productToDeleteFromCart = prompt("Type the produce you want to remove from the cart: ")
+            let productToDeleteFromCartQuant = prompt("Type the quantity of produce you want to remove from the cart: ")
+            deleteCartProduct(productToDeleteFromCart, productToDeleteFromCartQuant)
+        } else if (chooseFunction === 10) {
+            cartProductsValuesSum()
+        } else if (chooseFunction === 11) {
+            showCartProductsAndValues()
         }
     }
-} 
+}
 
-console.log(IDs)
-console.log(names)
-console.log(prices)
-console.log(reviews)
+console.log("ID: ", IDs)
+console.log("Name: ", names)
+console.log("Prices: ", prices)
+console.log("Reviews: ", reviews)
+console.log("Shopping  cart: ", shoppingCartNames)
+console.log("Shopping cart quantities: ", shoppingCartQuantities)
+console.log("Shopping cart values: ", shoppingCartValues)
 
 function register(ID, name, price, review) {
     IDs[contRegister] = ID
@@ -158,6 +179,66 @@ function deleteProduct(DeleteThisID) {
         prices = updatedPricesArray
         reviews = updatedReviewsArray
         console.log("The product of ID: ", DeleteThisID, " and name: ", productName, " was deleted.")
+    }
+}
+
+function shoppingCartAdd(name, quantity){
+    let ifNameExist = false
+    for(let i = 0; i < shoppingCartNames.length; i++){
+        if(name === shoppingCartNames[i]){
+            shoppingCartQuantities[i] += quantity
+            console.log("Item already exist, quantity added.")
+            ifNameExist = true
+        } 
+    } if(ifNameExist === false) {
+        shoppingCartNames[contCart] = name
+        shoppingCartQuantities[contCart] = quantity
+        contCart++
+        console.log("Item added.")
+    }
+    
+}
+
+function deleteCartProduct(name, quantity){
+    let auxCartName = []
+    let auxCartQuant = []
+    let cont = 0
+    for(let i = 0; i < shoppingCartNames.length; i++) {
+        if(name === shoppingCartNames[i] ){
+            shoppingCartQuantities[i] -= quantity
+            if(shoppingCartQuantities[i] === 0) {
+                console.log("Item deleted.")
+                for(let j = 0; j < shoppingCartNames.length; j++){
+                    if(shoppingCartNames[j] !== name){
+                        auxCartName[cont] = shoppingCartNames[j]
+                        auxCartQuant[cont] = shoppingCartQuantities[j]
+                        cont++
+                    }
+                }
+                shoppingCartNames = auxCartName
+                shoppingCartQuantities = auxCartQuant     
+            } 
+        } 
+    }
+}
+
+function cartProductsValuesSum(){
+    let totalSum = 0
+    for(let i = 0; i < shoppingCartNames.length; i++){
+        let itemPrice = parseFloat(prompt("Item: ", shoppingCartNames[i], "; insert price: "))
+        shoppingCartValues[i] = itemPrice
+    }
+    for(let j = 0; j < shoppingCartValues.length; j++){
+        totalSum = totalSum + (shoppingCartQuantities[j] * shoppingCartValues[j])
+    }
+    console.log("The total sum is: $", totalSum)
+}
+
+function showCartProductsAndValues(){
+    for(let i = 0; i < shoppingCartNames.length; i++){
+        let productSum = 0
+        productSum = productSum + (shoppingCartQuantities[i] * shoppingCartValues[i])
+        console.log("Product: ", shoppingCartNames[i], "; Total sum: ", productSum)
     }
 }
 
